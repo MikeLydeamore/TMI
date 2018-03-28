@@ -131,7 +131,7 @@ fit_stan <- function(data, iterations = 10000, model = tmi_model, ...)
   if (class(data) != "tmidata")
     stop("Argument data must have class tmidata")
   
-  fit <- sampling(model_code = tmi_model, data = data, iter=iterations, pars=c("lambda","gamma"), ...)
+  fit <- sampling(tmi_model, data = data, iter=iterations, pars=c("lambda","gamma"), ...)
   
   return (fit)
 }
