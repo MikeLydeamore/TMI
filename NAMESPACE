@@ -1,0 +1,2 @@
+useDynLib(tmi, .registration=TRUE)
+exportPattern("^[[:alpha:]]+")
