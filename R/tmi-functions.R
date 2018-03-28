@@ -126,7 +126,7 @@ setupData <- function(panel_data)
 #' @param model Model code for stan. The default model is that for the two-state Markov chain.
 #' 
 #' @return The stan fit.
-fit_stan <- function(data, iterations = 10000, model = tmi_model)
+fit_stan <- function(data, iterations = 10000, model = tmi_model, ...)
 {
   if (class(data) != "tmidata")
     stop("Argument data must have class tmidata")
