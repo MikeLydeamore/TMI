@@ -6,7 +6,7 @@ To install, use the following snippet:
 
 ```
 library(devtools)
-install_github("MikeLydeamore/tmi/")
+install_github("MikeLydeamore/TMI")
 ```
 
 This package requires a C++ compiler to install.
