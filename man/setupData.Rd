@@ -8,10 +8,18 @@ setupData(panel_data, formula, id = id)
 }
 \arguments{
 \item{panel_data}{The input panel data}
+
+\item{formula}{A formula giving the state/time dependence. The left hand side should be the state variable, the right hand side the time. The state variable should
+have the format where 0 indicates not infected, and 1 indicates infected.}
+
+\item{id}{The column of the panel_data that refers to the (unique) individual ID. Should be provided unquoted.}
 }
 \value{
 A list containing the data for use for fitting, of class "tmidata".
 }
 \description{
 Set up panel data for fitting
+}
+\examples{
+data <- setupData(panel_data = convertSimulationsToPanelData(simulations), formula = state~t, id = id)
 }

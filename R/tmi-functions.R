@@ -93,7 +93,7 @@ plot_fits <- function(stan_fit, lambda_ = -1, gamma_ = -1)
 #' 
 #' @param panel_data The input panel data
 #' @param formula A formula giving the state/time dependence. The left hand side should be the state variable, the right hand side the time. The state variable should
-#' have the format where 1 indicates not infected, and 2 indicates infected.
+#' have the format where 0 indicates not infected, and 1 indicates infected.
 #' @param id The column of the panel_data that refers to the (unique) individual ID. Should be provided unquoted.
 #' 
 #' @return A list containing the data for use for fitting, of class "tmidata".

@@ -12,6 +12,8 @@ fit_stan(data, iterations = 10000, model = tmi_model, ...)
 \item{iterations}{Number of iterations to run each chain for}
 
 \item{model}{Model code for stan. The default model is that for the two-state Markov chain.}
+
+\item{...}{Other parameters which are passed to `rstan::sampling`.}
 }
 \value{
 The stan fit.
