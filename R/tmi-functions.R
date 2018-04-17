@@ -105,6 +105,16 @@ setupData <- function(panel_data, formula, id=id)
   unique_ids <- (panel_data %>% select(id) %>% unique())[,1]
   num_individuals <- length(unique_ids)
   num_obs <- sapply(unique_ids, function(i) { nrow(filter(panel_data, id == i))})
+  
+  while (sum(num_obs == 1) > 0) 
+  {
+    #Silently drop those with 1 observation.
+    keep <- which(num_obs > 1)
+    unique_ids <- unique_ids[keep]
+    num_individuals <- length(unique_ids)
+    num_obs <- sapply(unique_ids, function(i) { nrow(filter(panel_data, id == i))})
+  }
+  
   times <- lapply(unique_ids, function(i) {
     t <- filter(panel_data, id == i)[[all.vars(formula)[2]]]
     padding <- max(num_obs) - length(t)
