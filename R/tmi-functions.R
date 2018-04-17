@@ -112,7 +112,7 @@ setupData <- function(panel_data, formula, id=id)
   })
   times <- do.call(rbind, times)
   S <- lapply(unique_ids, function(i) { 
-    f <- as.numeric(filter(panel_data, id == i)[[all.vars(formula)[1]]])-1
+    f <- as.numeric(filter(panel_data, id == i)[[all.vars(formula)[1]]])
     padding <- max(num_obs) - length(f)
     return (c(f, rep(x=0, times=padding)))
     

@@ -4,7 +4,7 @@
 \alias{setupData}
 \title{Set up panel data for fitting}
 \usage{
-setupData(panel_data)
+setupData(panel_data, formula, id = id)
 }
 \arguments{
 \item{panel_data}{The input panel data}
