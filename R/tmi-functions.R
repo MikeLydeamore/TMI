@@ -46,9 +46,9 @@ convertSimulationsToPanelData <- function(simulations, sampling_times)
       observation_times <- c(observation_times, t)
       idx <- tail(which(simulation$t <= t), n=1)
       if (simulation$S[idx] == 1)
-        state <- c(state, 1)
+        state <- c(state, 0)
       else
-        state <- c(state, 2)
+        state <- c(state, 1)
       
       t <- t + sampling_time[counter]
       counter <- counter+1
