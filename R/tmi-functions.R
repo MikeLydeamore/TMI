@@ -98,8 +98,8 @@ extract_means <- function(stan_fit)
   lambda_cis <- quantile(df$lambda, c(0.025, 0.975))
   gamma_cis <- quantile(df$gamma, c(0.025, 0.975))
   
-  lret <- list("lambda"=c("mean"=lambda_mean, "lower95"=lambda_cis[1], "upper95"=lambda_cis[2]),
-               "gamma"=c("mean"=gamma_mean, "lower95"=gamma_cis[1], "upper95"=gamma_cis[2]))
+  lret <- list("lambda"=c("mean"=lambda_mean, "lower95"=as.numeric(lambda_cis[1]), "upper95"=as.numeric(lambda_cis[2])),
+               "gamma"=c("mean"=gamma_mean, "lower95"=as.numeric(gamma_cis[1]), "upper95"=as.numeric(gamma_cis[2])))
   
   class(lret) <- "tmiestimates"
   return (lret)
@@ -109,12 +109,12 @@ print.tmiestimates <- function(data)
 {
   cat("Parameter Estimates from TMI Fit:\n")
   cat("Lambda:\n")
-  cat("  Mean: ",data$lambda["mean"], "\n")
-  cat("  95% CI: [", data$lambda["lower95"], ", ", data$lambda["upper95"], "]\n")
+  cat("  Mean: ",data$lambda["mean"], "\n", sep="")
+  cat("  95% CI: [", data$lambda["lower95"], ", ", data$lambda["upper95"], "]\n", sep="")
   
   cat("Gamma:\n")
-  cat("  Mean: ",data$gamma["mean"], "\n")
-  cat("  95% CI: [", data$gamma["lower95"], ", ", data$gamma["upper95"], "]\n")
+  cat("  Mean: ",data$gamma["mean"], "\n", sep="")
+  cat("  95% CI: [", data$gamma["lower95"], ", ", data$gamma["upper95"], "]\n", sep="")
   
 }
 
