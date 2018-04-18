@@ -89,6 +89,36 @@ plot_fits <- function(stan_fit, lambda_ = -1, gamma_ = -1)
   return (p + geom_vline(aes(xintercept=value), data = int_frame, colour="blue")) 
 }
 
+extract_means <- function(stan_fit)
+{
+  df <- as.data.frame(stan_fit) %>% select(lambda,gamma)
+  
+  lambda_mean <- mean(df$lambda)
+  gamma_mean <- mean(df$gamma)
+  lambda_cis <- quantile(df$lambda, c(0.025, 0.975))
+  gamma_cis <- quantile(df$gamma, c(0.025, 0.975))
+  
+  lret <- list("lambda"=c("mean"=lambda_mean, "lower95"=lambda_cis[1], "upper95"=lambda_cis[2]),
+               "gamma"=c("mean"=gamma_mean, "lower95"=gamma_cis[1], "upper95"=gamma_cis[2]))
+  
+  class(lret) <- "tmiestimates"
+  return (list("lambda"=c("mean"=lambda_mean, "lower95"=lambda_cis[1], "upper95"=lambda_cis[2]),
+               "gamma"=c("mean"=gamma_mean, "lower95"=gamma_cis[1], "upper95"=gamma_cis[2])))
+}
+
+print.tmiestimates <- function(data)
+{
+  cat("Parameter Estimates from TMI Fit:")
+  cat("Lambda:")
+  cat("  Mean: ",data$lambda$mean)
+  cat("  95% CI: [", data$lambda$lower95, ", ", data$lambda$upper95, "]")
+  
+  cat("Gamma:")
+  cat("  Mean: ",data$gamma$mean)
+  cat("  95% CI: [", data$gamma$lower95, ", ", data$gamma$upper95, "]")
+  
+}
+
 #' Set up panel data for fitting
 #' 
 #' @param panel_data The input panel data
