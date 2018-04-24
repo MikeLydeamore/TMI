@@ -182,3 +182,57 @@ fit_stan <- function(data, iterations = 10000, model = tmi_model, ...)
   
   return (fit)
 }
+
+#' Get the per-individual sore durations
+#' 
+#' @param panel_data Panel data to fit for
+#' @param formula A formula of the form state~time, where state is the state variable (1=infectious) and time is the observation time
+#' @param id The ID variable which identifies each individual (provide unquoted)
+#' 
+#' @return A vector of the empricial durations of each skin sore infection, assuming continuous observation.
+getSoreDurations <- function(panel_data, formula, id=ID)
+{
+  idquo <- enquo(id)
+  unique_ids <- (panel_data %>% select(!!idquo) %>% unique())[,1]
+  l <- lapply(unique_ids, function(i) {
+    df <- filter(panel_data, (!!idquo) == i)
+    #Get infectious presentations:
+    state <- df[,all.vars(formula)[1]]
+    times <- df[,all.vars(formula)[2]]
+    currently_infectious <- state[1]
+    if (currently_infectious == 1) {
+      infection_time <- times[1]
+    }
+    row <- 1
+    sore_durations <- c()
+    while (row < length(state))
+    {
+      if (currently_infectious == 1)
+      {
+        #Find next 0:
+        next_susc <- which(state == 0)
+        next_susc <- next_susc[which(next_susc>row)][1]
+        if (is.na(next_susc))
+          break
+        sore_durations <- c(sore_durations, times[next_susc]-infection_time)
+        currently_infectious <- 0
+        row <- next_susc
+      }
+      
+      else
+      {
+        next_inf <- which(state == 1)
+        next_inf <- next_inf[which(next_inf>row)][1]
+        if (is.na(next_inf))
+          break
+        infection_time <- times[next_inf]
+        row <- next_inf
+        currently_infectious <- 1
+      }
+    }
+    
+    return (sore_durations)
+  })
+  
+  return (do.call(c,l))
+}
