@@ -131,9 +131,10 @@ print.tmiestimates <- function(data)
 #' data <- setupData(panel_data = convertSimulationsToPanelData(simulations), formula = state~t, id = id)
 setupData <- function(panel_data, formula, id=id)
 {
-  unique_ids <- (panel_data %>% select(id) %>% unique())[,1]
+  quoid <- enquo(id)
+  unique_ids <- (panel_data %>% select((!!quoid)) %>% unique())[,1]
   num_individuals <- length(unique_ids)
-  num_obs <- sapply(unique_ids, function(i) { nrow(filter(panel_data, id == i))})
+  num_obs <- sapply(unique_ids, function(i) { nrow(filter(panel_data, (!!id) == i))})
   
   while (sum(num_obs == 1) > 0) 
   {
