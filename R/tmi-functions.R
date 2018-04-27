@@ -70,7 +70,9 @@ convertSimulationsToPanelData <- function(simulations, sampling_times)
 #' @param gamma True value of gamma (-1 if true value is unknown)
 plot_fits <- function(stan_fit, lambda_ = -1, gamma_ = -1)
 {
-  df <- as.data.frame(stan_fit) %>% select(lambda, gamma) %>% melt(id.vars=c())
+  df <- as.data.frame(stan_fit) %>% select(lambda, gamma) 
+  df$R0 <- (df$lambda+df$gamma)/df$gamma
+  df <- df %>% melt(id.vars=c())
   cis <- group_by(df, variable) %>% summarise(lower95 = quantile(value, 0.025), upper95 = quantile(value, 0.975),
                                               lower99 = quantile(value, 0.005), upper99 = quantile(value, 0.995))
   
@@ -132,9 +134,10 @@ print.tmiestimates <- function(data)
 setupData <- function(panel_data, formula, id=id)
 {
   quoid <- enquo(id)
-  unique_ids <- (panel_data %>% select((!!quoid)) %>% unique())[,1]
+  unique_ids <- (panel_data %>% select(!!quoid) %>% unique())[,1]
   num_individuals <- length(unique_ids)
-  num_obs <- sapply(unique_ids, function(i) { nrow(filter(panel_data, (!!id) == i))})
+
+  num_obs <- sapply(unique_ids, function(i) { nrow(filter(panel_data, (!!quoid) == i))})
   
   while (sum(num_obs == 1) > 0) 
   {
@@ -142,17 +145,17 @@ setupData <- function(panel_data, formula, id=id)
     keep <- which(num_obs > 1)
     unique_ids <- unique_ids[keep]
     num_individuals <- length(unique_ids)
-    num_obs <- sapply(unique_ids, function(i) { nrow(filter(panel_data, id == i))})
+    num_obs <- sapply(unique_ids, function(i) { nrow(filter(panel_data, (!!quoid) == i))})
   }
   
   times <- lapply(unique_ids, function(i) {
-    t <- filter(panel_data, id == i)[[all.vars(formula)[2]]]
+    t <- filter(panel_data, (!!quoid) == i)[[all.vars(formula)[2]]]
     padding <- max(num_obs) - length(t)
     return (c(t, rep(x=0, times = padding)))
   })
   times <- do.call(rbind, times)
   S <- lapply(unique_ids, function(i) { 
-    f <- as.numeric(filter(panel_data, id == i)[[all.vars(formula)[1]]])
+    f <- as.numeric(filter(panel_data, (!!quoid) == i)[[all.vars(formula)[1]]])
     padding <- max(num_obs) - length(f)
     return (c(f, rep(x=0, times=padding)))
     
@@ -179,7 +182,7 @@ fit_stan <- function(data, iterations = 10000, model = tmi_model, ...)
   if (class(data) != "tmidata")
     stop("Argument data must have class tmidata")
   
-  fit <- sampling(tmi_model, data = data, iter=iterations, pars=c("lambda","gamma"), ...)
+  fit <- sampling(model, data = data, iter=iterations, pars=c("lambda","gamma"), ...)
   
   return (fit)
 }
@@ -235,5 +238,14 @@ getSoreDurations <- function(panel_data, formula, id=ID)
     return (sore_durations)
   })
   
-  return (do.call(c,l))
+  ret <- do.call(c,l)
+  class(ret) <- "tmiempirical"
+  return (ret)
+}
+
+print.tmiempirical <- function(means)
+{
+  cat("Total number of skin sore episodes:",length(means),"\n")
+  cat("Empirical mean duration:",mean(means, na.rm=T),"\n")
+  cat("95% CIs: [",quantile(means, probs=0.025, na.rm=T),", ",quantile(means,probs=0.975, na.rm=T),"]\n", sep="")
 }
