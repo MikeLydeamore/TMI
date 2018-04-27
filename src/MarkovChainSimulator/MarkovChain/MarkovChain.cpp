@@ -11,7 +11,8 @@ void State::addToKey(std::string key, double a)
 
 State &State::operator+=(const State &p)
 {
-    for (auto &p : p.mMap)
+    auto map = p.mMap;
+    for (auto &p : map)
         mMap[p.first] += p.second;
     return *this;
 }
@@ -194,7 +195,7 @@ void MarkovChain::solveGillespie()
         for (int i = 0; i < transitions.size(); i++)
         {
             rates[i] = transitions[i]->getRate(states);
-            if (rates[i] < 0.0 || isnan(rates[i]))
+            if (rates[i] < 0.0 || std::isnan(rates[i]))
             {
                 std::cout << "Transition from " << transitions[i]->getSourceState() << " to " << transitions[i]->getDestinationState() << " has rate " << rates[i] << std::endl;
                 exit(-1);
@@ -204,7 +205,7 @@ void MarkovChain::solveGillespie()
         double rates_sum = std::accumulate(rates.begin(), rates.end(), (double)0.0);
 
         double event_time = -(1.0 / rates_sum) * log(runif());
-        if (isinf(event_time))
+        if (std::isinf(event_time))
         {
             ended_infinite = true;
             break;
