@@ -16,8 +16,8 @@ data {
 }
 
 parameters {
-  real<lower=1e-10, upper=1> lambda;
-  real<lower=1e-10, upper=1> gamma;
+  real<lower=0> lambda;
+  real<lower=0> gamma;
 }
 
 transformed parameters {
@@ -31,8 +31,8 @@ transformed parameters {
 }
 
 model {
-  lambda ~ uniform(1e-10, 1);
-  gamma ~ uniform(1e-10, 1);
+  lambda ~ normal(0.5, 0.5);
+  gamma ~ normal(0.5, 0.5);
   for (j in 1:num_individuals)
   {
     for (t in 2:num_obs[j]) {
