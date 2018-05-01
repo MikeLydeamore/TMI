@@ -131,7 +131,7 @@ public:
         rChain.addState("I"+indiv_string, 0);
       }
       
-      infected_states[i] = "I"+indiv_string;
+      infected_states[i-1] = "I"+indiv_string;
     }
     
     //Transitions!
