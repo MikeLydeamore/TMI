@@ -101,3 +101,63 @@ List runLinearisedSISModel(double lambda, double gamma, double max_time) {
 }
 
 
+class IndividualSISModel
+{
+private:
+  double mBeta;
+  double mGamma;
+  int mNumIndividuals;
+  int mInitialInfected;
+  
+public:
+  IndividualSISModel(double beta, double gamma, int numIndividuals, int initialInfected) : 
+  mBeta(beta), mGamma(gamma), mNumIndividuals(numIndividuals), mInitialInfected(initialInfected) {}
+  
+  void setupModel(MarkovChain &rChain)
+  {
+    std::cout << "Setting up" << std::endl;
+    std::vector<std::string> infected_states(mNumIndividuals, "");
+    for (int i = 1 ; i <= mNumIndividuals; i++)
+    {
+      std::string indiv_string = std::to_string(i);
+      if (i <= mInitialInfected)
+      {
+        rChain.addState("S"+indiv_string, 0);
+        rChain.addState("I"+indiv_string, 1);
+      }
+      else
+      {
+        rChain.addState("S"+indiv_string, 1);
+        rChain.addState("I"+indiv_string, 0);
+      }
+      
+      infected_states[i] = "I"+indiv_string;
+    }
+    
+    //Transitions!
+    for (int i = 1; i <= mNumIndividuals; i++)
+    {
+      std::string indiv_string = std::to_string(i);
+      rChain.addTransition(new TransitionMassAction("S"+indiv_string, "I"+indiv_string, mBeta/(mNumIndividuals-1), infected_states));
+      rChain.addTransition(new TransitionIndividual("I"+indiv_string, "S"+indiv_string, mGamma));
+    }
+  }
+};
+
+// [[Rcpp::export]]
+List runIndividualSISModel(double beta, double gamma, int num_individuals, int num_infected, double max_time)
+{
+  SerialiserFullR serialiser;
+  
+  IndividualSISModel model(beta, gamma, num_individuals, num_infected);
+  
+  MarkovChain chain;
+  model.setupModel(chain);
+  
+  chain.setSerialiser(&serialiser);
+  chain.setMaxTime(max_time);
+  chain.solve(MarkovChain::SOLVER_TYPE_GILLESPIE);
+  
+  return (serialiser.getResults());
+}
+
