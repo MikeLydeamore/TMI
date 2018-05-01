@@ -76,7 +76,7 @@ plot_fits <- function(stan_fit, lambda_ = -1, gamma_ = -1)
   cis <- group_by(df, variable) %>% summarise(lower95 = quantile(value, 0.025), upper95 = quantile(value, 0.975),
                                               lower99 = quantile(value, 0.005), upper99 = quantile(value, 0.995))
   
-  int_frame <- data.frame("variable"=c("lambda","gamma"), "value"=c(lambda_, gamma_))
+  int_frame <- data.frame("variable"=c("lambda","gamma","R0"), "value"=c(lambda_, gamma_, (lambda_+gamma_)/(gamma_)))
   
   p <- ggplot() + geom_density(aes(x=value), data=df) + facet_wrap(~variable, scales = "free") + 
     labs(x="Parameter Value", y="Density") +
@@ -134,7 +134,7 @@ print.tmiestimates <- function(data)
 setupData <- function(panel_data, formula, id=id)
 {
   quoid <- enquo(id)
-  unique_ids <- (panel_data %>% select(!!quoid) %>% unique())[,1]
+  unique_ids <- (select(panel_data, !!quoid) %>% unique())[,1]
   num_individuals <- length(unique_ids)
 
   num_obs <- sapply(unique_ids, function(i) { nrow(filter(panel_data, (!!quoid) == i))})
