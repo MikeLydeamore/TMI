@@ -5,3 +5,7 @@ runLinearisedSISModel <- function(lambda, gamma, max_time) {
     .Call(`_tmi_runLinearisedSISModel`, lambda, gamma, max_time)
 }
 
+runIndividualSISModel <- function(beta, gamma, num_individuals, num_infected, max_time) {
+    .Call(`_tmi_runIndividualSISModel`, beta, gamma, num_individuals, num_infected, max_time)
+}
+
