@@ -249,3 +249,57 @@ print.tmiempirical <- function(means)
   cat("Empirical mean duration:",mean(means, na.rm=T),"\n")
   cat("95% CIs: [",quantile(means, probs=0.025, na.rm=T),", ",quantile(means,probs=0.975, na.rm=T),"]\n", sep="")
 }
+
+#' Generates sampling times to be similar to that from already collected panel data
+#' 
+#' @param panel_data Panel data from which to draw the observation distribution from
+#' @param time_variable The variable corresponding to time (unquoted)
+#' @param id The ID variable for each individual
+#' @param num_individuals Number of individuals to generate sampling times for
+#' @param max_time Maximum time to observe each individual
+#' 
+#' @return Returns a list of sampling times for each individual.
+generateSamplingTimesFromPanelData <- function(panel_data, time_variable, id=id, num_individuals, max_time=365)
+{
+  quoid <- enquo(id)
+  quotime <- enquo(time_variable)
+  unique_ids <- (select(panel_data, !!quoid) %>% unique())[,1]
+  ages_seen <- sapply(unique_ids, function(i) {
+    d <- filter(panel_data, (!!quoid) == i)
+    times <- select(d, !!quotime)[,1]
+    return (diff(c(0, times)))
+  })
+  ages_seen <- do.call(c, ages_seen)
+  time_dist <- density(ages_seen)
+  bw <- time_dist$bw
+  
+  sampling_times <- lapply(1:num_individuals, function(i) {
+    t <- 0
+    times <- c()
+    while (t < max_time) {
+      s <- sample(ages_seen, size=1)
+      next_time <-  s + rnorm(n=1, mean=0, sd=sqrt(bw))
+      if (next_time < 1) 
+        next_time <- 1
+      t <- t + next_time
+      times <- c(times, t)
+    }
+    while (length(times) <= 1)
+    {
+      t <- 0
+      times <- c()
+      while (t < max_time) {
+        s <- sample(ages_seen, size=1)
+        next_time <-  s + rnorm(n=1, mean=0, sd=sqrt(bw))
+        if (next_time < 1) 
+          next_time <- 1
+        t <- t + next_time
+        times <- c(times, t)
+      }
+    }
+    return (diff(c(0, times)))
+  })
+  
+  return (sampling_times)
+}
+
