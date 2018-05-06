@@ -111,12 +111,14 @@ print.tmiestimates <- function(data)
 {
   cat("Parameter Estimates from TMI Fit:\n")
   cat("Lambda:\n")
-  cat("  Mean: ",data$lambda["mean"], "\n", sep="")
-  cat("  95% CI: [", data$lambda["lower95"], ", ", data$lambda["upper95"], "]\n", sep="")
+  cat("  Mean: ",data$lambda["mean"], " (1/", round(1/data$lambda["mean"], digits = 2), ")\n", sep="")
+  cat("  95% CI: [", data$lambda["lower95"], ", ", data$lambda["upper95"], "] ([1/", round(1/data$lambda["lower95"], digits = 2), ", 1/",
+      round(1/data$lambda["upper95"], digits = 2), "])\n", sep="")
   
   cat("Gamma:\n")
-  cat("  Mean: ",data$gamma["mean"], "\n", sep="")
-  cat("  95% CI: [", data$gamma["lower95"], ", ", data$gamma["upper95"], "]\n", sep="")
+  cat("  Mean: ",data$gamma["mean"], " (1/ ", round(1/data$gamma["mean"], digits = 2), ")\n", sep="")
+  cat("  95% CI: [", data$gamma["lower95"], ", ", data$gamma["upper95"], "] ([1/", round(1/data$gamma["lower95"], digits = 2), ", 1/",
+      round(1/data$gamma["upper95"], digits = 2), "])\n", sep="")
   
 }
 
