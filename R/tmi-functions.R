@@ -97,11 +97,14 @@ extract_means <- function(stan_fit)
   
   lambda_mean <- mean(df$lambda)
   gamma_mean <- mean(df$gamma)
+  r0_mean <- mean((df$lambda+df$gamma)/df$gamma)
   lambda_cis <- quantile(df$lambda, c(0.025, 0.975))
   gamma_cis <- quantile(df$gamma, c(0.025, 0.975))
+  r0_cis <- quantile((df$lambda+df$gamma)/df$gamma, c(0.025, 0.975))
   
   lret <- list("lambda"=c("mean"=lambda_mean, "lower95"=as.numeric(lambda_cis[1]), "upper95"=as.numeric(lambda_cis[2])),
-               "gamma"=c("mean"=gamma_mean, "lower95"=as.numeric(gamma_cis[1]), "upper95"=as.numeric(gamma_cis[2])))
+               "gamma"=c("mean"=gamma_mean, "lower95"=as.numeric(gamma_cis[1]), "upper95"=as.numeric(gamma_cis[2])),
+               "R0"=c("mean"=r0_mean, "lower95"=as.numeric(r0_cis[1]), "upper95"=as.numeric(r0_cis[2])))
   
   class(lret) <- "tmiestimates"
   return (lret)
@@ -119,6 +122,10 @@ print.tmiestimates <- function(data)
   cat("  Mean: ",data$gamma["mean"], " (1/ ", round(1/data$gamma["mean"], digits = 2), ")\n", sep="")
   cat("  95% CI: [", data$gamma["lower95"], ", ", data$gamma["upper95"], "] ([1/", round(1/data$gamma["lower95"], digits = 2), ", 1/",
       round(1/data$gamma["upper95"], digits = 2), "])\n", sep="")
+  
+  cat("R0:\n")
+  cat("  Mean: ",data$R0["mean"], "\n", sep="")
+  cat("  95% CI: [", data$R0["lower95"], ", ", data$R0["upper95"], "]", sep="")
   
 }
 
