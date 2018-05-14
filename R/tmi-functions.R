@@ -73,7 +73,7 @@ plot_fits <- function(stan_fit, lambda_ = -1, gamma_ = -1)
   df <- as.data.frame(stan_fit) %>% select(lambda, gamma) 
   df$R0 <- (df$lambda+df$gamma)/df$gamma
   df <- df %>% melt(id.vars=c())
-  cis <- group_by(df, variable) %>% summarise(lower95 = quantile(value, 0.025), upper95 = quantile(value, 0.975),
+  cis <- dplyr::group_by(df, variable) %>% summarise(lower95 = quantile(value, 0.025), upper95 = quantile(value, 0.975),
                                               lower99 = quantile(value, 0.005), upper99 = quantile(value, 0.995))
   
   int_frame <- data.frame("variable"=c("lambda","gamma","R0"), "value"=c(lambda_, gamma_, (lambda_+gamma_)/(gamma_)))
