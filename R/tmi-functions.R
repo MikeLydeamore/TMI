@@ -78,7 +78,7 @@ plot_fits <- function(stan_fit, lambda_ = -1, gamma_ = -1)
   
   int_frame <- data.frame("variable"=c("lambda","gamma","R0"), "value"=c(lambda_, gamma_, (lambda_+gamma_)/(gamma_)))
   
-  facet_names <- c(lambda="Force of infection", gamma="Rate of recovery")
+  facet_names <- c(lambda="Force of infection", gamma="Rate of recovery", R0="R0")
   p <- ggplot() + geom_density(aes(x=value), data=df) + facet_wrap(~variable, scales = "free", labeller = labeller(variable=facet_names)) + 
     labs(x="Parameter Value", y="Density") +
     geom_vline(aes(xintercept=lower95), data=cis, colour="red") + geom_vline(aes(xintercept=upper95), data=cis, colour="red") +
