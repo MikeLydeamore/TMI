@@ -313,3 +313,26 @@ generateSamplingTimesFromPanelData <- function(panel_data, time_variable, id=id,
   return (sampling_times)
 }
 
+robustExperimentalDesign <- function(delta, stan_fit, num_obs, num_samples = 10000)
+{
+  if (delta < 0)
+    return (-1e10 * delta)
+  
+  df <- as.data.frame(stan_fit) %>% select(lambda, gamma)
+  kernel <- kde(df)
+  
+  samples <- rkde(num_samples, kernel)
+  
+  fi_components <- sapply(1:num_samples, function(i) {
+    FI <- calculateFisherInformation(lambda = samples[i,1], gamma = samples[i,2], delta = delta, num_obs = num_obs)
+  })
+  
+  total_fi <- sum(fi_components)
+  
+  return (total_fi)
+}
+
+optimiseRobustExperimentalDesign <- function(stan_fit, delta0 = 10, num_obs = 12)
+{
+  powell(delta0, fn = robustExperimentalDesign, stan_fit = stan_fit, num_obs = num_obs)
+}
