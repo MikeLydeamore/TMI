@@ -334,5 +334,6 @@ robustExperimentalDesign <- function(delta, stan_fit, num_obs, num_samples = 100
 
 optimiseRobustExperimentalDesign <- function(stan_fit, delta0 = 10, num_obs = 12, num_samples = 10000)
 {
-  powell(delta0, fn = robustExperimentalDesign, stan_fit = stan_fit, num_obs = num_obs)
+  cntrl <- powell.control(fnscale = -1)
+  powell(delta0, fn = robustExperimentalDesign, control = cntrl, stan_fit = stan_fit, num_obs = num_obs)
 }
