@@ -313,10 +313,10 @@ generateSamplingTimesFromPanelData <- function(panel_data, time_variable, id=id,
   return (sampling_times)
 }
 
-robustExperimentalDesign <- function(delta, stan_fit, num_obs, num_samples = 10000)
+robustExperimentalDesign <- function(delta, stan_fit, num_samples = 10000)
 {
-  if (delta < 0)
-    return (-1e10 * delta)
+  if (any(delta<0))
+    return (-1e10 * min(delta))
   
   df <- as.data.frame(stan_fit) %>% select(lambda, gamma)
   kernel <- kde(df)
@@ -324,7 +324,7 @@ robustExperimentalDesign <- function(delta, stan_fit, num_obs, num_samples = 100
   samples <- rkde(num_samples, kernel)
   
   fi_components <- sapply(1:num_samples, function(i) {
-    FI <- calculateFisherInformation(lambda = samples[i,1], gamma = samples[i,2], delta = delta, n_obs = num_obs)
+    FI <- calculateFisherInformation(lambda = samples[i,1], gamma = samples[i,2], delta = delta)
   })
   
   total_fi <- sum(fi_components)
@@ -332,7 +332,7 @@ robustExperimentalDesign <- function(delta, stan_fit, num_obs, num_samples = 100
   return (total_fi/num_samples)
 }
 
-optimiseRobustExperimentalDesign <- function(stan_fit, delta0 = 10, num_obs = 12, num_samples = 10000)
+optimiseRobustExperimentalDesign <- function(stan_fit, delta0 = rep(10, 12), num_obs = 12, num_samples = 10000)
 {
-  optimise(f = robustExperimentalDesign, maximum=T, interval=c(1, 365), stan_fit = stan_fit, num_obs = num_obs, num_samples = num_samples)
+  optim(par = delta0, fn = robustExperimentalDesign, control=list(fnscale = -1), stan_fit = stan_fit, num_samples = num_samples, method="SANN")
 }
