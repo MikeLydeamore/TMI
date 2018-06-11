@@ -332,6 +332,15 @@ robustExperimentalDesign <- function(delta, stan_fit, num_samples = 10000)
   return (total_fi/num_samples)
 }
 
+#' Optimise Robust Experimental Design
+#' 
+#' Optimises the Fisher Information matrix under the ED-optimality criterion
+#' approximating the integral using monte-carlo sampling
+#' 
+#' @param stan_fit An object of class tmifit
+#' @param delta0 Vector containing initial guess for time between each visit
+#' @param num_samples Number of samples to approximate the robust design integral with. Higher values
+#' will lead the computation to take longer.
 optimiseRobustExperimentalDesign <- function(stan_fit, delta0 = rep(10, 12), num_obs = 12, num_samples = 10000)
 {
   optim(par = delta0, fn = robustExperimentalDesign, control=list(fnscale = -1), stan_fit = stan_fit, num_samples = num_samples, method="SANN")
