@@ -313,12 +313,12 @@ generateSamplingTimesFromPanelData <- function(panel_data, time_variable, id=id,
   return (sampling_times)
 }
 
-robustExperimentalDesign <- function(delta, stan_fit, num_samples = 10000)
+robustExperimentalDesign <- function(delta, fit_frame, num_samples = 10000)
 {
   if (any(delta<0))
     return (-1e10 * min(delta))
   
-  df <- as.data.frame(stan_fit) %>% select(lambda, gamma)
+  df <- fit_frame %>% select(lambda, gamma)
   kernel <- kde(df)
   
   samples <- rkde(num_samples, kernel)
@@ -337,11 +337,13 @@ robustExperimentalDesign <- function(delta, stan_fit, num_samples = 10000)
 #' Optimises the Fisher Information matrix under the ED-optimality criterion
 #' approximating the integral using monte-carlo sampling
 #' 
-#' @param stan_fit An object of class tmifit
+#' @param fit_frame A data frame containing posterior samples for both the force of infection (lambda) and rate of recovery (gamma)
 #' @param delta0 Vector containing initial guess for time between each visit
 #' @param num_samples Number of samples to approximate the robust design integral with. Higher values
-#' will lead the computation to take longer.
-optimiseRobustExperimentalDesign <- function(stan_fit, delta0 = rep(10, 12), num_obs = 12, num_samples = 10000)
+#' will lead the computation to take longer
+#' 
+#' @return Result from optim.
+optimiseRobustExperimentalDesign <- function(fit_frame, delta0 = rep(10, 12), num_obs = 12, num_samples = 10000)
 {
-  optim(par = delta0, fn = robustExperimentalDesign, control=list(fnscale = -1), stan_fit = stan_fit, num_samples = num_samples, method="SANN")
+  optim(par = delta0, fn = robustExperimentalDesign, control=list(fnscale = -1), fit_frame = fit_frame, num_samples = num_samples, method="SANN")
 }
