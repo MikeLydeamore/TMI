@@ -74,6 +74,17 @@
 }
 
 
+#' Calculate Fisher Information Matrix in the two-state model
+#' 
+#' Calculates the determinant of the Fisher Information matrix in a two-state model
+#' for a given set of parameters and time between observations.
+#' 
+#' @param gamma Rate of recovery
+#' @param lambda Force of infection
+#' @param delta Vector of times between observations
+#' @param i0 Initial probability of being infected (prevalence)
+#' 
+#' @return The determinant of the Fisher Information
 calculateFisherInformation <- function(gamma, lambda, delta, i0=0.316)
 {
   
