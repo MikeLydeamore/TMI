@@ -161,3 +161,66 @@ List runIndividualSISModel(double beta, double gamma, int num_individuals, int n
   return (serialiser.getResults());
 }
 
+class IndividualSIIModel
+{
+private:
+  double mBeta;
+  double mGamma;
+  int mNumIndividuals;
+  int mInitialInfected;
+  
+public:
+  IndividualSIIModel(double beta, double gamma, int numIndividuals, int initialInfected) : 
+  mBeta(beta), mGamma(gamma), mNumIndividuals(numIndividuals), mInitialInfected(initialInfected) {}
+  
+  void setupModel(MarkovChain &rChain)
+  {
+    std::cout << "Setting up" << std::endl;
+    std::vector<std::string> infected_states(2*mNumIndividuals, "");
+    for (int i = 1 ; i <= mNumIndividuals; i++)
+    {
+      std::string indiv_string = std::to_string(i);
+      if (i <= mInitialInfected)
+      {
+        rChain.addState("S"+indiv_string, 0);
+        rChain.addState("I1"+indiv_string, 1);
+        rChain.addState("I2"+indiv_string, 1);
+      }
+      else
+      {
+        rChain.addState("S"+indiv_string, 1);
+        rChain.addState("I1"+indiv_string, 0);
+        rChain.addState("I2"+indiv_string, 0);
+      }
+      
+      infected_states[i-1] = "I1"+indiv_string;
+      infected_states[mNumIndividuals+i-1] = "I2"+indiv_string;
+    }
+    
+    //Transitions!
+    for (int i = 1; i <= mNumIndividuals; i++)
+    {
+      std::string indiv_string = std::to_string(i);
+      rChain.addTransition(new TransitionMassAction("S"+indiv_string, "I1"+indiv_string, mBeta/(mNumIndividuals-1), infected_states));
+      rChain.addTransition(new TransitionIndividual("I1"+indiv_string, "I2"+indiv_string, 2*mGamma));
+      rChain.addTransition(new TransitionIndividual("I2"+indiv_string, "S"+indiv_string, 2*mGamma));
+    }
+  }
+};
+
+// [[Rcpp::export]]
+List runIndividualSIIModel(double beta, double gamma, int num_individuals, int num_infected, double max_time)
+{
+  SerialiserFullR serialiser;
+  
+  IndividualSIIModel model(beta, gamma, num_individuals, num_infected);
+  
+  MarkovChain chain;
+  model.setupModel(chain);
+  
+  chain.setSerialiser(&serialiser);
+  chain.setMaxTime(max_time);
+  chain.solve(MarkovChain::SOLVER_TYPE_GILLESPIE);
+  
+  return (serialiser.getResults());
+}
