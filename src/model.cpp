@@ -183,27 +183,27 @@ public:
       if (i <= mInitialInfected)
       {
         rChain.addState("S"+indiv_string, 0);
-        rChain.addState("I1"+indiv_string, 1);
-        rChain.addState("I2"+indiv_string, 1);
+        rChain.addState("I"+indiv_string, 1);
+        rChain.addState("U"+indiv_string, 1);
       }
       else
       {
         rChain.addState("S"+indiv_string, 1);
-        rChain.addState("I1"+indiv_string, 0);
-        rChain.addState("I2"+indiv_string, 0);
+        rChain.addState("I"+indiv_string, 0);
+        rChain.addState("U"+indiv_string, 0);
       }
       
-      infected_states[i-1] = "I1"+indiv_string;
-      infected_states[mNumIndividuals+i-1] = "I2"+indiv_string;
+      infected_states[i-1] = "I"+indiv_string;
+      infected_states[mNumIndividuals+i-1] = "U"+indiv_string;
     }
     
     //Transitions!
     for (int i = 1; i <= mNumIndividuals; i++)
     {
       std::string indiv_string = std::to_string(i);
-      rChain.addTransition(new TransitionMassAction("S"+indiv_string, "I1"+indiv_string, mBeta/(mNumIndividuals-1), infected_states));
-      rChain.addTransition(new TransitionIndividual("I1"+indiv_string, "I2"+indiv_string, 2*mGamma));
-      rChain.addTransition(new TransitionIndividual("I2"+indiv_string, "S"+indiv_string, 2*mGamma));
+      rChain.addTransition(new TransitionMassAction("S"+indiv_string, "I"+indiv_string, mBeta/(mNumIndividuals-1), infected_states));
+      rChain.addTransition(new TransitionIndividual("I"+indiv_string, "U"+indiv_string, 2*mGamma));
+      rChain.addTransition(new TransitionIndividual("U"+indiv_string, "S"+indiv_string, 2*mGamma));
     }
   }
 };
