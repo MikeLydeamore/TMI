@@ -9,3 +9,7 @@ runIndividualSISModel <- function(beta, gamma, num_individuals, num_infected, ma
     .Call(`_tmi_runIndividualSISModel`, beta, gamma, num_individuals, num_infected, max_time)
 }
 
+runIndividualSIIModel <- function(beta, gamma, num_individuals, num_infected, max_time) {
+    .Call(`_tmi_runIndividualSIIModel`, beta, gamma, num_individuals, num_infected, max_time)
+}
+

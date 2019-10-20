@@ -4,16 +4,19 @@
 \alias{optimiseRobustExperimentalDesign}
 \title{Optimise Robust Experimental Design}
 \usage{
-optimiseRobustExperimentalDesign(stan_fit, delta0 = rep(10, 12),
+optimiseRobustExperimentalDesign(fit_frame, delta0 = rep(10, 12),
   num_obs = 12, num_samples = 10000)
 }
 \arguments{
-\item{stan_fit}{An object of class tmifit}
+\item{fit_frame}{A data frame containing posterior samples for both the force of infection (lambda) and rate of recovery (gamma)}
 
 \item{delta0}{Vector containing initial guess for time between each visit}
 
 \item{num_samples}{Number of samples to approximate the robust design integral with. Higher values
-will lead the computation to take longer.}
+will lead the computation to take longer}
+}
+\value{
+Result from optim.
 }
 \description{
 Optimises the Fisher Information matrix under the ED-optimality criterion
