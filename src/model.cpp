@@ -184,7 +184,7 @@ public:
       {
         rChain.addState("S"+indiv_string, 0);
         rChain.addState("I"+indiv_string, 1);
-        rChain.addState("U"+indiv_string, 1);
+        rChain.addState("U"+indiv_string, 0);
       }
       else
       {
